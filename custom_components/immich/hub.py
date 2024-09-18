@@ -99,12 +99,6 @@ class ImmichHub:
                         _LOGGER.error("Error from API: status=%d", response.status)
                         return None
 
-                    if response.content_type not in _ALLOWED_MIME_TYPES:
-                        _LOGGER.error(
-                            "MIME type is not supported: %s", response.content_type
-                        )
-                        return None
-
                     return await response.read()
         except aiohttp.ClientError as exception:
             _LOGGER.error("Error connecting to the API: %s", exception)
@@ -128,7 +122,7 @@ class ImmichHub:
                     assets: list[dict] = favorites["assets"]["items"]
 
                     filtered_assets: list[dict] = [
-                        asset for asset in assets if asset["type"] == "IMAGE"
+                        asset for asset in assets if (asset["type"] == "IMAGE") and (asset["originalMimeType"] in _ALLOWED_MIME_TYPES) 
                     ]
 
                     return filtered_assets
@@ -173,7 +167,7 @@ class ImmichHub:
                     assets: list[dict] = album_info["assets"]
 
                     filtered_assets: list[dict] = [
-                        asset for asset in assets if asset["type"] == "IMAGE"
+                        asset for asset in assets if (asset["type"] == "IMAGE") and (asset["originalMimeType"] in _ALLOWED_MIME_TYPES)
                     ]
 
                     return filtered_assets
